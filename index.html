@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {/*初始化页面*/
+            margin:0;
+            padding:0;
+        }          
+        #box {
+            margin-left:100px;
+            width:300px;
+            height:300px;
+            border:5px dashed #333;
+            position:relative;
+            color:red;
+            font-size:40px;
+        }
+        #box img {
+           	width: 50px;
+           	height: 50px;
+           	position: absolute;
+           	border-radius: 20px;
+           }
+        .label {
+            margin-left: 100px;
+            font-size: 30px;
+        }
+       button {
+       	margin-left:100px;
+       }
+    </style>
+</head>
+<body onload="gg()">
+	<button id="btn" style="color:pink;font-size: 20px;">开始游戏</button>
+    <div class="label">Score:<span id="score" style="color: red">0</span></div>
+    <div id="box" >
+	   <img src="img/mouse.PNG" alt="" id="mouse"/>
+	   <img src="img/cat.PNG" alt=""  id="img"/>
+	   <canvas id="canvas" width="300px" height="300px">对不起，你的浏览器不支持canvas，请更新版本。</canvas>
+    </div>
+
+<script>
+	function $(id){
+		return document.getElementById(id);
+	}
+var img=$("img");
+var box=$("box");
+var mouse=$("mouse");
+var score=$("score");
+var MouseX=0;//老鼠的横坐标
+var MouseY=0;//老鼠的纵坐标
+
+var timer=null;//按钮事件的定时器
+var tim=0;//图片移动的定时器
+var i=0;/*记录碰撞的次数*/
+
+//定义缓动动画的初始位置leader，目标位置target
+ var targetX=0;
+ var targetY=0;
+ var leaderX=0;
+ var leaderY=0;
+
+ var count=15;//数据，从15开始倒计时 
+ 
+ var btn=$("btn");
+	  var count=15;//数据，从5开始倒计时 
+	  btn.onclick=function(){
+	  	clearInterval(timer);// 先清除掉原来的定时器
+	  	//alert(11);//测试一下
+	  	this.disabled=true;//disabled是不可用、
+	  	//alert(this);
+	  	var that=this;//把btn给了that
+	  	timer=setInterval(sendTextMessage,1000);//开启定时器，名字是timer
+	  	function sendTextMessage(){
+	  		count--;//每次自减一
+	  		if(count>=0){
+	  			that.innerHTML="还剩余"+count+"秒";
+	  		}
+	  		else{
+	  			that.innerHTML="游戏结束"
+	  			that.disabled=true;//在这里只能用that，表示的是btn。如果用的this，则表示的是定时器
+	  			clearInterval(timer);//清除定时器	
+	  			clearInterval(tim);
+	  			box.innerHTML="您的最终得分是"+ score.innerHTML;
+	  			score.style.display="none";
+	  		}
+	  	}
+	  	
+	//实现猫跟随鼠标移动效果的定时器
+	tim=setInterval(function(){
+ 	leaderX=leaderX+(targetX-leaderX);
+ 	leaderY=leaderY+(targetY-leaderY);
+ 	if(leaderX>=0&&leaderX<=parseInt(box.offsetWidth-img.offsetWidth)){
+ 		img.style.left=leaderX+"px";
+ 	}
+ 	
+ 	if(leaderY>=0&&leaderY<=parseInt(box.offsetHeight-img.offsetHeight)){
+ 		img.style.top=leaderY+"px";
+ 	}	
+ },10);
+ 
+ 
+	  }
+	  
+ 
+box.onmousemove=function(event){
+	var event=event||window.event;//兼容
+	
+	//计算目标位置坐标------鼠标的坐标
+	targetX=event.clientX-this.offsetLeft-img.offsetWidth/2;
+	targetY=event.clientY-this.offsetTop-img.offsetHeight/2;
+	
+     //进行碰撞检测
+	var l1=img.offsetLeft;  
+            var r1=img.offsetLeft+img.offsetWidth;  
+            var t1=img.offsetTop;  
+            var b1=img.offsetTop+img.offsetHeight;  
+              
+            var l2=mouse.offsetLeft;  
+            var r2=mouse.offsetLeft+mouse.offsetWidth;  
+            var t2=mouse.offsetTop;  
+            var b2=mouse.offsetTop+mouse.offsetHeight;  
+              
+            if(r1<l2 || l1>r2 || b1<t2 || t1>b2)  
+            {    
+            }  
+            else  
+            {  
+               mouse.style.display="none"  ; /*碰撞就清除老鼠*/
+               score.innerHTML=i++;//计分
+               
+               //再次随机生成老鼠的位置
+                x=Math.random()*300;
+	            y=Math.random()*300;
+               ball();
+               gg();
+                 
+            }        
+}
+
+//老鼠坐标
+function gg(){
+	  MouseX=Math.random()*300;/*随机生成老鼠的坐标*/
+	  MouseY=Math.random()*300;
+	  mouse.style.display="block";
+	  
+	  if(MouseX>=0&&MouseX<=parseInt(box.offsetWidth-mouse.offsetWidth)){
+ 		mouse.style.left=MouseX+"px";
+ 	}
+ 	
+ 	 if(MouseY>=0&&MouseY<=parseInt(box.offsetHeight-mouse.offsetHeight)){
+ 		mouse.style.top=MouseY+"px";
+ 	}
+}
+
+//随机生成的小圆点坐标
+var x=Math.random()*300;
+ var y=Math.random()*300;
+ 
+ //没碰撞一次就会绘画一个小圆点
+ function ball(){
+ 	var c=document.getElementById("canvas");
+    var cxt=c.getContext("2d");
+    cxt.fillStyle="red";
+    cxt.beginPath();
+    
+    cxt.arc(x,y,5,0,Math.PI*2,true);
+    cxt.closePath();
+    cxt.fill();
+ 	}
+ 	
+</script>
+</body>
+</html>
